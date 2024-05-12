@@ -1,0 +1,6 @@
+fastapi
+motor
+python-multipart
+aiofiles
+jinja2
+pydantic-settings

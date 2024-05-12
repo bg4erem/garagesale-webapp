@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Page</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+    <div id="login-form">
+        <h2>Admin Login</h2>
+        <input type="number" id="pin" placeholder="Enter PIN">
+        <button onclick="authenticate()">Login</button>
+    </div>
+    <div id="admin-content" style="display:none;">
+        <h2>Create Item</h2>
+        <form id="item-form" enctype="multipart/form-data">
+            <label for="title">Title:</label><br>
+            <input type="text" id="title" name="title" required><br>
+            
+            <label for="description">Description:</label><br>
+            <textarea id="description" name="description" required></textarea><br>
+            
+            <label for="price">Price:</label><br>
+            <input type="number" step="0.01" min="0" id="price" name="price" required><br>
+            
+            <label for="photos">Photos/Videos:</label><br>
+            <input type="file" id="photos" name="photos" accept="image/*, video/*" multiple><br>
+            
+            <h3>Properties</h3>
+            <div id="properties-container">
+                <!-- Property fields will be added dynamically here -->
+            </div>
+            
+            <button type="button" onclick="addProperty()">Add Property</button><br>
+            <br>
+            
+            <button type="button" onclick="createItem()">Create Item</button>
+        </form>
+    </div>
+
+    <script>
+        function authenticate() {
+            var pin = document.getElementById("pin").value;
+            
+            // Make API call to authenticate PIN
+            fetch(`/api/v1/verify_pin?pin=${pin}`, {method: 'POST'})
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Authentication failed');
+                }
+            })
+            .then(data => {
+                // Show admin content
+                document.getElementById("login-form").style.display = "none";
+                document.getElementById("admin-content").style.display = "block";
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Authentication failed. Please try again.');
+            });
+        }
+
+        // Check if admin PIN is already stored in cookies
+        window.onload = function() {
+            var pin = getCookie("adminPin");
+            if (pin) {
+                // If PIN is found, auto-login
+                document.getElementById("pin").value = pin;
+                authenticate();
+            }
+        }
+
+        function getCookie(name) {
+            var cookieArr = document.cookie.split("; ");
+            for (var i = 0; i < cookieArr.length; i++) {
+                var cookiePair = cookieArr[i].split("=");
+                if (name == cookiePair[0]) {
+                    return cookiePair[1];
+                }
+            }
+            return null;
+        }
+        
+        function addProperty() {
+            var propertiesContainer = document.getElementById("properties-container");
+            
+            var propertyDiv = document.createElement("div");
+            propertyDiv.classList.add("property");
+            
+            var nameLabel = document.createElement("label");
+            nameLabel.textContent = "Property Name:";
+            var nameInput = document.createElement("input");
+            nameInput.type = "text";
+            nameInput.name = "properties.name";
+            
+            var valueLabel = document.createElement("label");
+            valueLabel.textContent = "Property Value:";
+            var valueInput = document.createElement("input");
+            valueInput.type = "text";
+            valueInput.name = "properties.value";
+            
+            var displayLabel = document.createElement("label");
+            displayLabel.textContent = "Display:";
+            var displayInput = document.createElement("input");
+            displayInput.type = "checkbox";
+            displayInput.checked = true;
+            displayInput.name = "properties.display";
+
+            var deleteIcon = document.createElement("i");
+            deleteIcon.className = "bi bi-trash"
+            deleteIcon.addEventListener("click", function() {
+                propertiesContainer.removeChild(propertyDiv);
+            });
+
+            propertyDiv.appendChild(nameLabel);
+            propertyDiv.appendChild(nameInput);
+            propertyDiv.appendChild(valueLabel);
+            propertyDiv.appendChild(valueInput);
+            propertyDiv.appendChild(displayLabel);
+            propertyDiv.appendChild(displayInput);
+            propertyDiv.appendChild(deleteIcon);
+
+            propertiesContainer.appendChild(propertyDiv);
+        }
+        
+        async function createItem() {
+            const formItem = document.getElementById("item-form");
+            
+            let itemObject = {}
+            itemObject["title"] = formItem.elements.title.value
+            itemObject["description"] = formItem.elements.description.value
+            itemObject["price"] = formItem.elements.price.value
+            itemObject["photos"] = []
+            itemObject["properties"] = []
+            
+            if (formItem.elements.namedItem("properties.name")) {
+                const propertyNameInputs = formItem.elements.namedItem("properties.name")
+                const propertyValueInputs = formItem.elements.namedItem("properties.value")
+                const propertyDisplayInputs = formItem.elements.namedItem("properties.display")
+
+                for (let i = 0; i < propertyNameInputs.length; i++ ) {
+                    let property = {}
+                    property["name"] = propertyNameInputs[i].value
+                    property["value"] = propertyValueInputs[i].value
+                    property["display"] = propertyDisplayInputs[i].checked
+                    itemObject["properties"].push(property)
+                }
+            }
+
+            if (formItem.elements.photos.files.length > 0 ) {
+                let formPhotosData = new FormData();
+                for (let i=0; i < formItem.elements.photos.files.length; i++) {
+                    formPhotosData.append("files", formItem.elements.photos.files[i])
+                }
+
+                itemObject["photos"] = await fetch(
+                    "/api/v1/upload_files",
+                    {"method":"post", "body": formPhotosData}
+                ).then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    } else {
+                        throw new Error("Error uploading file")
+                    }
+                })
+            }
+            
+            await fetch (
+                "/api/v1/items", 
+                {"method":"post", "headers":{"Content-Type":"application/json"}, "body":JSON.stringify(itemObject)}
+            ).then( response => {
+                if (response.ok) {
+                    alert("Item was created")
+                }
+            })
+        }
+    </script>
+</body>
+</html>
