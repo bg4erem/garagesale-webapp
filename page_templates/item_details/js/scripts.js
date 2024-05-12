@@ -26,6 +26,7 @@ async function render_details() {
     let item_id = window.location.href.split("/").at(-1);
 
     let item = await fetch(`/api/v1/items?id=${item_id}`).then(resp => {return resp.json()});
+    document.getElementById("page-title").textContent = item.title
     
     const productSection = document.getElementById("product-section");
     productSection.innerHTML = `
