@@ -6,7 +6,7 @@ from fastapi.responses import JSONResponse
 from models.items import Item
 from database import items_collection
 from settings import settings
-from PIL import Image
+from PIL import Image, ImageOps
 
 router = APIRouter(prefix="/api/v1")
 
@@ -36,6 +36,7 @@ async def upload_files(files: list[UploadFile]):
         compressed_path = f"{save_path}.webp"
         image = Image.open(save_path)
         image = image.convert("RGB")
+        image = ImageOps.exif_transpose(image)
         image.save(compressed_path, 'webp', optimize=True, quality=85)
         
         os.remove(save_path)
