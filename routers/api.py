@@ -33,7 +33,7 @@ async def upload_files(files: list[UploadFile]):
             content = await file.read()
             await out_file.write(content)
 
-        compressed_path = f"{save_path}.webp"
+        compressed_path = f"{save_path}.jpeg"
         image = Image.open(save_path)
         image = image.convert("RGB")
         image = ImageOps.exif_transpose(image)
