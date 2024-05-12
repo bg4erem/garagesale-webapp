@@ -1,3 +1,4 @@
+import os
 from datetime import datetime, timedelta, timezone
 import aiofiles
 from fastapi import APIRouter, Cookie, HTTPException, UploadFile, status
@@ -5,6 +6,7 @@ from fastapi.responses import JSONResponse
 from models.items import Item
 from database import items_collection
 from settings import settings
+from PIL import Image
 
 router = APIRouter(prefix="/api/v1")
 
@@ -30,7 +32,14 @@ async def upload_files(files: list[UploadFile]):
         async with aiofiles.open(save_path, "wb") as out_file:
             content = await file.read()
             await out_file.write(content)
-        filepathes.append(f"/{save_path}")
+
+        compressed_path = f"{save_path}.webp"
+        image = Image.open(save_path)
+        image = image.convert("RGB")
+        image.save(compressed_path, 'webp', optimize=True, quality=85)
+        
+        os.remove(save_path)
+        filepathes.append(f"/{compressed_path}")
     
     return filepathes
 
