@@ -39,7 +39,7 @@ async def upload_files(files: list[UploadFile]):
             image = image.convert("RGB")
             image.thumbnail((1000, 1000), Image.Resampling.LANCZOS)
             image = ImageOps.exif_transpose(image)
-            image.save(compressed_path, 'webp', optimize=True, quality=85)
+            image.save(compressed_path, 'webp', optimize=True, quality=90)
             
             os.remove(save_path)
             filepathes.append(f"/{compressed_path}")
