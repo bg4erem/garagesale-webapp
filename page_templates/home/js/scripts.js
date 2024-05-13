@@ -11,9 +11,18 @@ async function load_and_render_items() {
 
     items.forEach(item => {
         let itemCard = document.createElement("div");
+
         let itemPictureSrc = "https://dummyimage.com/450x300/dee2e6/6c757d.jpg";
         if (item.photos.length > 0) { itemPictureSrc = item.photos[0] }
+
         itemCard.className = "col mb-5";
+        let itemPriceHTML = `${item.price} ${item.price_curr}`;
+        if (item.full_price) { 
+            itemPriceHTML = `
+                <span class="text-muted text-decoration-line-through">${item.full_price} ${item.price_curr}</span>
+                ${item.price} ${item.price_curr}
+            ` 
+        }
         itemCard.innerHTML = `
             <div class="card h-100">
                 <!-- Sale badge-->
@@ -26,7 +35,7 @@ async function load_and_render_items() {
                         <!-- Product name-->
                         <h5 class="fw-bolder">${item.title}</h5>
                         <!-- Product price-->
-                        ${item.price} ${item.price_curr}
+                        ${itemPriceHTML}
                     </div>
                 </div>
                 <!-- Product actions-->

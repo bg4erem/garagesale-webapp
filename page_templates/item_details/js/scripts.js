@@ -29,6 +29,13 @@ async function render_details() {
     document.getElementById("page-title").textContent = item.title
     
     const productSection = document.getElementById("product-section");
+    let itemPriceHTML = `<span>${item.price} ${item.price_curr}</span>`;
+    if (item.full_price) { 
+        itemPriceHTML = `
+            <span class="text-decoration-line-through">${item.full_price} ${item.price_curr}</span>
+            <span>${item.price} ${item.price_curr}</span>
+        `;
+    }
     productSection.innerHTML = `
         <div class="container px-4 px-lg-5 my-5">
             <div class="row gx-4 gx-lg-5 align-items-center">
@@ -50,7 +57,7 @@ async function render_details() {
                     <div class="small mb-1">ID: ${item['_id']}</div>
                     <h1 class="display-5 fw-bolder">${item.title}</h1>
                     <div class="fs-5 mb-5">
-                        <span>${item.price} ${item.price_curr}</span>
+                        ${itemPriceHTML}
                     </div>
                     <p class="lead">${item.description}</p>
                     <div class="d-flex">

@@ -25,6 +25,7 @@ class Item(BaseModel):
     id: str = Field(default_factory=random_uid, alias="_id")
     title: str
     description: str = ""
+    full_price: float | None = None
     price: float
     price_curr: str = "KZT"
     photos: list[str] = []
