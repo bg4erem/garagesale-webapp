@@ -33,15 +33,18 @@ async def upload_files(files: list[UploadFile]):
             content = await file.read()
             await out_file.write(content)
 
-        compressed_path = f"{save_path}.jpeg"
-        image = Image.open(save_path)
-        image = image.convert("RGB")
-        image.thumbnail((1000, 1000), Image.Resampling.LANCZOS)
-        image = ImageOps.exif_transpose(image)
-        image.save(compressed_path, 'webp', optimize=True, quality=85)
-        
-        os.remove(save_path)
-        filepathes.append(f"/{compressed_path}")
+        if file.content_type.startswith("image/"):
+            compressed_path = f"{save_path}.jpeg"
+            image = Image.open(save_path)
+            image = image.convert("RGB")
+            image.thumbnail((1000, 1000), Image.Resampling.LANCZOS)
+            image = ImageOps.exif_transpose(image)
+            image.save(compressed_path, 'webp', optimize=True, quality=85)
+            
+            os.remove(save_path)
+            filepathes.append(f"/{compressed_path}")
+        else:
+            filepathes.append(f"/{save_path}")
     
     return filepathes
 
