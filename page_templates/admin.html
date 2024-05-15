@@ -50,9 +50,8 @@
                     <form id="item-form" enctype="multipart/form-data">
                         <input class="form-control" placeholder="Title" type="text" id="title" name="title" required><br>
                         <textarea class="form-control" placeholder="Description" id="description" name="description" required></textarea><br>
-                        <input class="form-control" placeholder="Full Price (not required)" type="number" step="0.01" min="0" id="full_price" name="full_price"><br>
                         <input class="form-control" placeholder="Price" type="number" step="0.01" min="0" id="price" name="price" required><br>
-                        
+                        <input class="form-control" placeholder="Full Price (not required)" type="number" step="0.01" min="0" id="full_price" name="full_price"><br>
                         <label for="photos">Photos/Videos:</label><br>
                         <input class="form-control" type="file" id="photos" name="photos" accept="image/*, video/*" multiple><br>
                         
@@ -64,7 +63,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" onclick="createItem()">Create Item</button>
+                    <button type="button" id="btnItemFormSubmit" class="btn btn-primary" onclick="createItem()">Create Item</button>
                 </div>
             </div>
         </div>
@@ -164,55 +163,64 @@
         
         async function createItem() {
             const formItem = document.getElementById("item-form");
-            
-            let itemObject = {}
-            itemObject["title"] = formItem.elements.title.value
-            itemObject["description"] = formItem.elements.description.value
-            if (formItem.elements.full_price.value) { itemObject["full_price"] = formItem.elements.full_price.value }
-            itemObject["price"] = formItem.elements.price.value
-            itemObject["photos"] = []
-            itemObject["properties"] = []
-            
-            if (formItem.elements.namedItem("properties.name")) {
-                const propertyNameInputs = formItem.elements.namedItem("properties.name")
-                const propertyValueInputs = formItem.elements.namedItem("properties.value")
-                const propertyDisplayInputs = formItem.elements.namedItem("properties.display")
+            if (formItem.checkValidity()) {
+                document.getElementById("btnItemFormSubmit").disabled = true;
 
-                for (let i = 0; i < propertyNameInputs.length; i++ ) {
-                    let property = {}
-                    property["name"] = propertyNameInputs[i].value
-                    property["value"] = propertyValueInputs[i].value
-                    property["display"] = propertyDisplayInputs[i].checked
-                    itemObject["properties"].push(property)
-                }
-            }
+                let itemObject = {}
+                itemObject["title"] = formItem.elements.title.value.trim();
+                itemObject["description"] = formItem.elements.description.value.trim();
+                if (formItem.elements.full_price.value) { itemObject["full_price"] = formItem.elements.full_price.value }
+                itemObject["price"] = formItem.elements.price.value
+                itemObject["photos"] = []
+                itemObject["properties"] = []
+                
+                if (formItem.elements.namedItem("properties.name")) {
+                    const propertyNameInputs = formItem.elements.namedItem("properties.name")
+                    const propertyValueInputs = formItem.elements.namedItem("properties.value")
+                    const propertyDisplayInputs = formItem.elements.namedItem("properties.display")
 
-            if (formItem.elements.photos.files.length > 0 ) {
-                let formPhotosData = new FormData();
-                for (let i=0; i < formItem.elements.photos.files.length; i++) {
-                    formPhotosData.append("files", formItem.elements.photos.files[i])
+                    for (let i = 0; i < propertyNameInputs.length; i++ ) {
+                        let property = {}
+                        property["name"] = propertyNameInputs[i].value.trim();
+                        property["value"] = propertyValueInputs[i].value.trim();
+                        property["display"] = propertyDisplayInputs[i].checked
+                        itemObject["properties"].push(property)
+                    }
                 }
 
-                itemObject["photos"] = await fetch(
-                    "/api/v1/upload_files",
-                    {"method":"post", "body": formPhotosData}
-                ).then(response => {
+                if (formItem.elements.photos.files.length > 0 ) {
+                    let formPhotosData = new FormData();
+                    for (let i=0; i < formItem.elements.photos.files.length; i++) {
+                        formPhotosData.append("files", formItem.elements.photos.files[i])
+                    }
+
+                    itemObject["photos"] = await fetch(
+                        "/api/v1/upload_files",
+                        {"method":"post", "body": formPhotosData}
+                    ).then(response => {
+                        if (response.ok) {
+                            return response.json()
+                        } else {
+                            throw new Error("Error uploading file")
+                        }
+                    })
+                }
+                
+                await fetch (
+                    "/api/v1/items", 
+                    {"method":"post", "headers":{"Content-Type":"application/json"}, "body":JSON.stringify(itemObject)}
+                ).then( response => {
                     if (response.ok) {
-                        return response.json()
-                    } else {
-                        throw new Error("Error uploading file")
+                        formItem.reset();
+                        document.getElementById("btnItemFormSubmit").disabled = false;
+                        var propertiesContainer = document.getElementById("properties-container");
+                        propertiesContainer.innerHTML = "";
+                        alert(`Created: ${itemObject["title"]}`);
                     }
                 })
+            } else {
+                formItem.reportValidity();
             }
-            
-            await fetch (
-                "/api/v1/items", 
-                {"method":"post", "headers":{"Content-Type":"application/json"}, "body":JSON.stringify(itemObject)}
-            ).then( response => {
-                if (response.ok) {
-                    alert("Item was created")
-                }
-            })
         }
     </script>
 </body>
