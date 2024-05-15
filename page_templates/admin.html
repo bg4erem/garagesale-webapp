@@ -77,7 +77,6 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script>
-        let AUTH_OK = false;
         function authenticate() {
             var pin = document.getElementById("pin").value;
             
@@ -263,12 +262,12 @@
         }
 
         // Check if admin PIN is already stored in cookies
-        window.onload = function() {
+        window.onload = async function() {
             var pin = getCookie("adminPin");
             if (pin) {
                 // If PIN is found, auto-login
-                AUTH_OK = true;
-                authenticate();
+                document.getElementById("pin").value = pin;
+                await authenticate();
                 renderItemsTable();
             }
         }
