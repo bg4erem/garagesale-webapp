@@ -15,7 +15,7 @@ ADMIN_PIN = settings.ADMIN_PIN
 @router.post("/verify_pin")
 async def authenticate_admin_pin(pin: str):
     if pin == ADMIN_PIN:
-        expiration_time = datetime.now(timezone.utc) + timedelta(hours=1)
+        expiration_time = datetime.now(timezone.utc) + timedelta(hours=24)
         response = JSONResponse(status_code=200, content={"message": "Authentication successful"})
         response.set_cookie(key="adminPin", value=pin, expires=expiration_time, path="/")
         return response
@@ -63,7 +63,68 @@ async def create_item(item: Item, admin_pin: str = Cookie(None, alias="adminPin"
     if admin_pin != ADMIN_PIN:
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
-        await items_collection.insert_one(item.model_dump(by_alias=True))
+        insertion_result = await items_collection.insert_one(item.model_dump(by_alias=True))
+        return insertion_result.inserted_id
+    except Exception as e:
+        print(e)
+        return JSONResponse({"error":e}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@router.put("/items/sold")
+async def mark_item_sold(item_id: str, sold:bool=True, admin_pin: str = Cookie(None, alias="adminPin")):
+    if admin_pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    saved_item = await items_collection.find_one({"_id": item_id})
+    if not saved_item:
+        raise HTTPException(status_code=404, detail=f"Not found {item_id}")
+    
+    saved_item = Item(**saved_item)
+    if sold:
+        saved_item.sold = True
+    else:
+        saved_item.sold = False
+
+    try:
+        await items_collection.update_one({"_id":item_id}, {"$set":saved_item.model_dump(by_alias=True)})
+        return True
+    except Exception as e:
+        print(e)
+        return JSONResponse({"error":e}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@router.put("/items")
+async def edit_item(item: Item, item_id: str, admin_pin: str = Cookie(None, alias="adminPin")):
+    if admin_pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    saved_item = await items_collection.find_one({"_id": item_id})
+    if not saved_item:
+        raise HTTPException(status_code=404, detail=f"Not found {item_id}")
+    
+    try:
+        await items_collection.update_one({"_id":item_id}, {"$set":item.model_dump(by_alias=True)})
+        return True
+    except Exception as e:
+        print(e)
+        return JSONResponse({"error":e}, status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@router.delete("/items")
+async def edit_item(item_id: str, admin_pin: str = Cookie(None, alias="adminPin")):
+    if admin_pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    saved_item = await items_collection.find_one({"_id": item_id})
+    if not saved_item:
+        raise HTTPException(status_code=404, detail=f"Not found {item_id}")
+    
+    saved_item = Item(**saved_item)
+    try:
+        await items_collection.delete_one({"_id":item_id})
+        all_items: list[Item] = await return_items()
+        referenced_media_files = [media for item in all_items for media in item]
+        for photo in saved_item.photos:
+            if photo not in referenced_media_files: 
+                os.remove(photo[1:])
+                print(f"removed from disk: {photo}")
         return True
     except Exception as e:
         print(e)
