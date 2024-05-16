@@ -59,12 +59,12 @@ async def return_items(id: str|None = None):
         return items
 
 @router.post("/items")
-async def create_item(item: Item, admin_pin: str = Cookie(None, alias="adminPin")):
+async def create_or_edit_item(item: Item, admin_pin: str = Cookie(None, alias="adminPin")):
     if admin_pin != ADMIN_PIN:
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
-        insertion_result = await items_collection.insert_one(item.model_dump(by_alias=True))
-        return insertion_result.inserted_id
+        insertion_result = await items_collection.update_one({"_id": item.id}, {"$set": item.model_dump(by_alias=True)}, upsert=True)
+        return insertion_result.upserted_id
     except Exception as e:
         print(e)
         return JSONResponse({"error":e}, status.HTTP_500_INTERNAL_SERVER_ERROR)
