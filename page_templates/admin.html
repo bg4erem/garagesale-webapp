@@ -282,7 +282,7 @@
                     soldBtnEl = `<button class="btn btn-sm btn-outline-warning" onclick="item_action('${item['_id']}', 'mark_unsold')">MARK AS NOT SOLD</button>`;
                 }
                 tableRow.innerHTML = `
-                    <td><a href="/details/${item["_id"]}" target="_blank">${item["_id"]}: ${item.title}</a></td>
+                    <td><a href="/details/${item["_id"]}" target="_blank">${item.title}</a></td>
                     <td>${item.price} ${item.price_curr}</td>
                     <td>
                         ${soldBtnEl}
