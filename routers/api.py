@@ -55,8 +55,11 @@ async def return_items(r: Request, bg_tasks: BackgroundTasks, id: str|None = Non
         item = Item(**item)
         item.views_all = await views_general_collection.find_one({"_id": id})
         item.views_all = item.views_all.get("all") if item.views_all else 1
-        if record_view:
+        
+        admin_cookie = r.cookies.get("adminPin")
+        if record_view and not admin_cookie:
             bg_tasks.add_task(record_item_view, id, r.client.host, r.headers.get("user-agent"), r.cookies.get("X-Client-ID"))
+        
         return item
     else:
         items = await items_collection.find({}).to_list(10_000)
