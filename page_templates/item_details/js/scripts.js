@@ -68,6 +68,9 @@ async function render_details() {
         properties_view_container.appendChild(propeties_table);
     }
 
+    let whatsappText = `${item.title.trim()}. ${window.location.href}`;
+    whatsappText = encodeURI(whatsappText);
+
     productSection.innerHTML = `
         <div class="container px-4 px-lg-5 my-5">
             <div class="row gx-4 gx-lg-5 align-items-center">
@@ -101,7 +104,7 @@ async function render_details() {
                         </a>
                     </div>
                     <div class="d-flex">
-                        <a class="btn btn-outline-dark flex-shrink-0" type="button" target="_blank" href="https://wa.me/${WHATSAPP_NUMBER}?text=${window.location.href}">
+                        <a class="btn btn-outline-dark flex-shrink-0" type="button" target="_blank" href="https://wa.me/${WHATSAPP_NUMBER}?text=${whatsappText}">
                             <i class="bi bi-whatsapp"></i>
                             Whatsapp
                         </a>
