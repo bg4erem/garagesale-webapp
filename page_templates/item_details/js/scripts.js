@@ -16,7 +16,14 @@ function render_photos_carousel(photos_array) {
         } else {
             carouselItem.className = "carousel-item";
         }
-        carouselItem.innerHTML = `<img src="${photos_array[i]}" class="d-block w-100">`;
+
+        const video_types = ["mp4", "mov", "webm", "mov", "avi", "3gp"];
+        media_type = photos_array[i].split(".").at(-1);
+        if (video_types.includes(media_type)) {
+            carouselItem.innerHTML = `<video  width="100%" autoplay muted controls><source src="${photos_array[i]}">Your browser does not support the video</video>`;
+        } else {
+            carouselItem.innerHTML = `<img src="${photos_array[i]}" class="d-block w-100">`;
+        }
 
         carouselInner.appendChild(carouselItem);
     }
