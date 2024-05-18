@@ -25,7 +25,7 @@ function render_photos_carousel(photos_array) {
 async function render_details() {
     let item_id = window.location.href.split("/").at(-1);
 
-    let item = await fetch(`/api/v1/items?id=${item_id}`).then(resp => {return resp.json()});
+    let item = await fetch(`/api/v1/items?id=${item_id}`, {credentials: "same-origin"}).then(resp => {return resp.json()});
     document.getElementById("page-title").textContent = item.title
     
     const productSection = document.getElementById("product-section");
@@ -55,6 +55,7 @@ async function render_details() {
                 </div>
                 <div class="col-md-6">
                     <div class="small mb-1">ID: ${item['_id']}</div>
+                    <div class="small mb-1">Просмотров: ${item.views_all}</div>
                     <h1 class="display-5 fw-bolder">${item.title}</h1>
                     <div class="fs-5 mb-5">
                         ${itemPriceHTML}

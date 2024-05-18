@@ -2,7 +2,7 @@ import random
 import string
 from typing import override
 from fastapi import UploadFile
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, Extra
 
 
 def random_uid():
@@ -21,7 +21,7 @@ class ItemProperty(BaseModel):
     display: bool = True
 
 
-class Item(BaseModel):
+class Item(BaseModel, extra="allow"):
     id: str = Field(default_factory=random_uid, alias="_id")
     title: str
     description: str = ""

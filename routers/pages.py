@@ -2,6 +2,7 @@ from fastapi import APIRouter, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
 from settings import settings
+from uuid import uuid4
 
 router = APIRouter()
 
@@ -17,17 +18,27 @@ async def return_page_files(file_path: str):
     return FileResponse(filepath)
 
 @router.get("/")
-async def render_home():
-    return FileResponse("page_templates/home/index.html")
+async def render_home(r: Request):
+    response = FileResponse("page_templates/home/index.html")
+
+    client_id_cookie = r.cookies.get("X-Client-ID")
+    if not client_id_cookie:
+        response.set_cookie("X-Client-ID", uuid4().hex)
+    
+    return response
 
 @router.get("/details/{item_id}")
-async def render_details_page(req: Request, item_id: str):
-    # return FileResponse("page_templates/item_details/index.html")
+async def render_details_page(r: Request, item_id: str):
     context = {
         "TELEGRAM_USERNAME": settings.TELEGRAM_USERNAME,
         "WHATSAPP_NUMBER": settings.WHATSAPP_NUMBER
     }
-    return templates.TemplateResponse(req, "item_details/index.html", context)
+    response = templates.TemplateResponse(r, "item_details/index.html", context)
+    client_id_cookie = r.cookies.get("X-Client-ID")
+    if not client_id_cookie:
+        response.set_cookie("X-Client-ID", uuid4().hex)
+
+    return response
 
 @router.get("/admin_page")
 async def render_admin_page():

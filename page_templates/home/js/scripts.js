@@ -7,7 +7,7 @@
 // Use this file to add JavaScript to your project
 async function load_and_render_items() {
     const itemsContainer = document.getElementById("items-container");
-    let items = await fetch("/api/v1/items").then( resp => { return resp.json() })
+    let items = await fetch("/api/v1/items", {credentials: "same-origin"}).then( resp => { return resp.json() })
 
     items.forEach(item => {
         if (!item.sold) {
