@@ -46,7 +46,7 @@ async function render_details() {
 
     const properties_view_container = document.createElement("div");
 
-    if (item.properties) {
+    if (item.properties.length > 0) {
         const properties_view_container_title = document.createElement("h5");
         properties_view_container_title.textContent = "Характеристики:"
 
