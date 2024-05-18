@@ -295,7 +295,7 @@
         }
 
         async function deleteItemArrayElement(id, array_name, element) {
-            let item = await fetch(`/api/v1/items?id=${id}`).then( resp => { return resp.json() });
+            let item = await fetch(`/api/v1/items?id=${id}&record_view=false`).then( resp => { return resp.json() });
             item[array_name] = item[array_name].filter(function (item) {
                 return item !== element
             })
@@ -321,7 +321,7 @@
                 })
             }
             if (action==="edit") {
-                let item = await fetch(`/api/v1/items?id=${id}`).then( resp => { return resp.json() });
+                let item = await fetch(`/api/v1/items?id=${id}&record_view=false`).then( resp => { return resp.json() });
                 const formItem = document.getElementById("item-form");
                 formItem.reset();
                 formItem.elements["_id"].value = item["_id"];
@@ -335,11 +335,14 @@
                 mediasContainer.innerHTML = "";
                 item.photos.forEach(photo => {
                     const mediaRow = document.createElement("div");
-                    mediaRow.className = "row justify-content-between"
+                    mediaRow.className = "row justify-content-between mb-2"
                     mediaRow.innerHTML = `
                         <div class="col-auto">
-                            <div class="row"><input type="text" readonly class="form-control-plaintext" name="existing_photos" value="${photo}"></div>
-                            <div class="row"><img src="${photo}" height="100" style="aspect-ratio: 1;"></img></div>
+                            <div class="row">
+                                <a href="${photo}" target="_blank">
+                                    <img src="${photo}" height="150" style="aspect-ratio: 1;"></img>
+                                </a>
+                            </div>
                         </div>
                         <div class="col-auto">
                             <a onclick="deleteItemArrayElement('${id}', 'photos', '${photo}')"><i class="bi bi-trash"></i></a>
@@ -360,7 +363,7 @@
 
             }
             if (action==="delete") {
-                let item = await fetch(`/api/v1/items?id=${id}`).then( resp => { return resp.json() });
+                let item = await fetch(`/api/v1/items?id=${id}&record_view=false`).then( resp => { return resp.json() });
                 if (confirm(`${item.title}:\nAre you sure you want to delete? This cannot be undone!`) == true) {
                     fetch(`/api/v1/items?item_id=${id}`, {method:"delete"}).then(response=>{
                         if (response.ok) { window.location.reload(); }
