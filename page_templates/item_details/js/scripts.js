@@ -43,6 +43,31 @@ async function render_details() {
             <span>${item.price} ${item.price_curr}</span>
         `;
     }
+
+    const properties_view_container = document.createElement("div");
+
+    if (item.properties) {
+        const properties_view_container_title = document.createElement("h5");
+        properties_view_container_title.textContent = "Характеристики:"
+
+        const propeties_table = document.createElement("table");
+        propeties_table.className = "table table-sm";
+        const properties_table_body = document.createElement("tbody");
+        item.properties.forEach(property => {
+            if (property.display) {
+                const propertyRow = document.createElement("tr");
+                propertyRow.innerHTML = `
+                    <td><strong>${property.name}</strong></td>
+                    <td>${property.value}</td>
+                `;
+                properties_table_body.appendChild(propertyRow);
+            }
+        })
+        propeties_table.appendChild(properties_table_body);
+        properties_view_container.appendChild(properties_view_container_title);
+        properties_view_container.appendChild(propeties_table);
+    }
+
     productSection.innerHTML = `
         <div class="container px-4 px-lg-5 my-5">
             <div class="row gx-4 gx-lg-5 align-items-center">
@@ -68,6 +93,7 @@ async function render_details() {
                         ${itemPriceHTML}
                     </div>
                     <p class="lead">${item.description}</p>
+                    ${properties_view_container.outerHTML}
                     <div class="d-flex">
                         <a class="btn btn-outline-dark flex-shrink-0" type="button" target="_blank" href="tg://resolve?domain=${TELEGRAM_USERNAME}">
                             <i class="bi bi-telegram"></i>
