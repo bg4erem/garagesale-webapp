@@ -10,3 +10,4 @@ class ItemView(BaseModel):
     ip: str = None
     useragent: str = None
     client_id: str = None
+    ip_lookup: dict | None = None
