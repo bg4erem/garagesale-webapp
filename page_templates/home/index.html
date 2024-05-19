@@ -48,7 +48,8 @@
                 <div class="text-center text-white">
                     <h1 class="display-4 fw-bolder">Garage Sale</h1>
                     <p class="lead fw-normal text-white-50 mb-0">Мы распродаем наши вещи по отличной цене!</p>
-                    <p id="count-down" class="lead fw-normal text-danger mb-0">Покупайте вещи в нашей распродаже!</p>
+                    <p class="lead fw-normal text-danger mb-0">До конца распродажи:</p>
+                    <p id="count-down" class="lead fw-normal text-danger mb-0"></p>
                 </div>
             </div>
         </header>
@@ -112,7 +113,7 @@
                     let secLeft = Math.floor(sale_end_epoch - now_epoch - daysLeft*oneDay - hoursLeft*oneHour - minLeft*oneMin);
                     
                     let countDownElement = document.getElementById("count-down");
-                    countDownElement.textContent = `До конца распродажи: ${daysLeft} d, ${hoursLeft} h, ${minLeft} m, ${secLeft} s`;
+                    countDownElement.textContent = `${daysLeft} д, ${hoursLeft} ч, ${minLeft} м, ${secLeft} с`;
 
                     await new Promise(r => setTimeout(r, 1000));
                 }
