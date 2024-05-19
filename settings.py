@@ -7,4 +7,6 @@ class Settings(BaseSettings):
     TELEGRAM_USERNAME: str
     WHATSAPP_NUMBER: str
 
+    FRONTEND_SALE_END: str | None = None
+
 settings = Settings()

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
+from database import items_collection
 from settings import settings
 from uuid import uuid4
 
@@ -19,7 +20,11 @@ async def return_page_files(file_path: str):
 
 @router.get("/")
 async def render_home(r: Request):
-    response = FileResponse("page_templates/home/index.html")
+    context = {
+        "FRONTEND_SALE_END": settings.FRONTEND_SALE_END
+    }
+    # response = FileResponse("page_templates/home/index.html")
+    response = templates.TemplateResponse(r, "home/index.html", context)
 
     client_id_cookie = r.cookies.get("X-Client-ID")
     if not client_id_cookie:
@@ -29,11 +34,15 @@ async def render_home(r: Request):
 
 @router.get("/details/{item_id}")
 async def render_details_page(r: Request, item_id: str):
+    item_title = await items_collection.find_one({"_id": item_id})
+    item_title = item_title["title"].strip() if item_title else "Unknown item"
     context = {
+        "ITEM_TITLE": item_title,
         "TELEGRAM_USERNAME": settings.TELEGRAM_USERNAME,
         "WHATSAPP_NUMBER": settings.WHATSAPP_NUMBER
     }
     response = templates.TemplateResponse(r, "item_details/index.html", context)
+
     client_id_cookie = r.cookies.get("X-Client-ID")
     if not client_id_cookie:
         response.set_cookie("X-Client-ID", uuid4().hex)
