@@ -105,19 +105,24 @@
             let sale_end_epoch = new Date(FRONTEND_SALE_END) / 1000;
 
             async function renderCounter() {
-                while (true) {
-                    let now_epoch = new Date() / 1000;
-                    let daysLeft = Math.floor((sale_end_epoch - now_epoch) / oneDay);
-                    let hoursLeft = Math.floor((sale_end_epoch - now_epoch - daysLeft*oneDay) / oneHour);
-                    let minLeft = Math.floor((sale_end_epoch - now_epoch - daysLeft*oneDay - hoursLeft*oneHour) / oneMin);
-                    let secLeft = sale_end_epoch - now_epoch - daysLeft*oneDay - hoursLeft*oneHour - minLeft*oneMin;
-                    secLeft = (Math.round((secLeft + Number.EPSILON) * 10) / 10).toFixed(1);
-                    
-                    let countDownElement = document.getElementById("count-down");
-                    countDownElement.textContent = `${daysLeft} д, ${hoursLeft} ч, ${minLeft} м, ${secLeft} с`;
+                const countDownElement = document.getElementById("count-down");
+                if (sale_end_epoch > (new Date() / 1000)) {
+                    while (true) {
+                        let now_epoch = new Date() / 1000;
+                        let daysLeft = Math.floor((sale_end_epoch - now_epoch) / oneDay);
+                        let hoursLeft = Math.floor((sale_end_epoch - now_epoch - daysLeft*oneDay) / oneHour);
+                        let minLeft = Math.floor((sale_end_epoch - now_epoch - daysLeft*oneDay - hoursLeft*oneHour) / oneMin);
+                        let secLeft = sale_end_epoch - now_epoch - daysLeft*oneDay - hoursLeft*oneHour - minLeft*oneMin;
+                        secLeft = (Math.round((secLeft + Number.EPSILON) * 10) / 10).toFixed(1);
+                        
+                        countDownElement.textContent = `${daysLeft} д, ${hoursLeft} ч, ${minLeft} м, ${secLeft} с`;
 
-                    await new Promise(r => setTimeout(r, 100));
+                        await new Promise(r => setTimeout(r, 100));
+                    }
+                } else {
+                    countDownElement.textContent = `0 д, 0 ч, 0 м, 0 с`;
                 }
+                
             }
 
             renderCounter();
