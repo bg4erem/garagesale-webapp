@@ -58,7 +58,7 @@ async def return_items(r: Request, bg_tasks: BackgroundTasks, id: str|None = Non
         
         admin_cookie = r.cookies.get("adminPin")
         if record_view and not admin_cookie:
-            bg_tasks.add_task(record_item_view, id, r.client.host, r.headers.get("user-agent"), r.cookies.get("X-Client-ID"))
+            bg_tasks.add_task(record_item_view, id, r)
         
         return item
     else:

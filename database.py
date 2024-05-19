@@ -1,6 +1,6 @@
+from fastapi import Request
 import motor.motor_asyncio
 from models.stats import ItemView
-from ip_lookup import lookup_ip
 
 client = motor.motor_asyncio.AsyncIOMotorClient()
 db = client.garage_sale_webapp
@@ -9,21 +9,17 @@ items_collection = db["items"]
 views_collection = db["views"]
 views_general_collection = db["views_general"]
 ips_collection = db["ips"]
+requests_collection = db["requests"]
 
-async def record_item_view(id: str, ip:str=None, useragent:str=None, client_id:str=None):
-    ip_info = None
-    if ip:
-        ip_stored = await ips_collection.find_one({"ip":ip})
-        if not ip_stored:
-            ip_info = await lookup_ip(ip)
-            if ip_info:
-                ip_info["_id"] = ip
-                await ips_collection.insert_one(ip_info)
-        else:
-            ip_info = ip_stored
+async def record_item_view(id: str, r: Request):
+    from ip_lookup import lookup_ip
+
+    ip:str= r.client.host
+    useragent:str= r.headers.get("user-agent")
+    client_id:str= r.cookies.get("X-Client-ID")
 
     view = ItemView(item_id=id, ip=ip, useragent=useragent, client_id=client_id)
-    view.ip_lookup = ip_info
+    view.ip_lookup = await lookup_ip(ip)
     await views_collection.insert_one(view.model_dump())
 
     views = await views_collection.count_documents({"item_id": id})

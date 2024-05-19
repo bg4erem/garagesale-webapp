@@ -23,7 +23,6 @@ async def render_home(r: Request):
     context = {
         "FRONTEND_SALE_END": settings.FRONTEND_SALE_END
     }
-    # response = FileResponse("page_templates/home/index.html")
     response = templates.TemplateResponse(r, "home/index.html", context)
 
     client_id_cookie = r.cookies.get("X-Client-ID")
