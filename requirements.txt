@@ -5,3 +5,4 @@ aiofiles
 jinja2
 pydantic-settings
 Pillow
+aiohttp
