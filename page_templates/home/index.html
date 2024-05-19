@@ -110,12 +110,13 @@
                     let daysLeft = Math.floor((sale_end_epoch - now_epoch) / oneDay);
                     let hoursLeft = Math.floor((sale_end_epoch - now_epoch - daysLeft*oneDay) / oneHour);
                     let minLeft = Math.floor((sale_end_epoch - now_epoch - daysLeft*oneDay - hoursLeft*oneHour) / oneMin);
-                    let secLeft = Math.floor(sale_end_epoch - now_epoch - daysLeft*oneDay - hoursLeft*oneHour - minLeft*oneMin);
+                    let secLeft = sale_end_epoch - now_epoch - daysLeft*oneDay - hoursLeft*oneHour - minLeft*oneMin;
+                    secLeft = (Math.round((secLeft + Number.EPSILON) * 10) / 10).toFixed(1);
                     
                     let countDownElement = document.getElementById("count-down");
                     countDownElement.textContent = `${daysLeft} д, ${hoursLeft} ч, ${minLeft} м, ${secLeft} с`;
 
-                    await new Promise(r => setTimeout(r, 1000));
+                    await new Promise(r => setTimeout(r, 100));
                 }
             }
 
