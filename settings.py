@@ -9,4 +9,9 @@ class Settings(BaseSettings):
 
     FRONTEND_SALE_END: str | None = None
 
+    OPENSEARCH_HOST: str | None = None
+    OPENSEARCH_PORT: int | None = None
+    OPENSEARCH_LOGIN: str | None = None
+    OPENSEARCH_PASSWORD: str | None = None
+
 settings = Settings()

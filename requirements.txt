@@ -6,3 +6,4 @@ jinja2
 pydantic-settings
 Pillow
 aiohttp
+opensearch-py[async]
