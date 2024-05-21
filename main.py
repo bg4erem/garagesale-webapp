@@ -24,9 +24,10 @@ async def add_process_time_header(request: Request, call_next):
 
     log = await request_log(request, response, process_time)
     async def log_request(log):
-        await requests_collection.insert_one(log)
         if opensearch_client:
             await opensearch_client.index(INDEX_REQUESTS, log)
+        await requests_collection.insert_one(log)
+        
     bg_tasks = BackgroundTasks()
     bg_tasks.add_task(log_request, log)
 
