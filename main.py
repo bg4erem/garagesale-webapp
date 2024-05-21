@@ -26,7 +26,7 @@ async def add_process_time_header(request: Request, call_next):
     bg_tasks = BackgroundTasks()
     bg_tasks.add_task(requests_collection.insert_one, log)
     if opensearch_client:
-        bg_tasks.add_task(opensearch_client.index(INDEX_REQUESTS, log))
+        bg_tasks.add_task(opensearch_client.index, INDEX_REQUESTS, log)
 
     response.background = bg_tasks
 
