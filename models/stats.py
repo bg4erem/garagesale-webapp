@@ -25,6 +25,12 @@ async def request_log(request: Request, response: Response, process_time: float)
         status_code: int
         user_agent: str|None
         ip_lookup: dict
+        location: list[float]|None
+
+    ip_lookup = await lookup_ip(request.client.host)
+    location = None
+    if ip_lookup.get("longitude") and ip_lookup.get("latitude"):
+        location = [ip_lookup.get("longitude"), ip_lookup.get("latitude")]
 
     request_log: RequestLog = {
         "timestamp": datetime.now(timezone.utc),
@@ -33,8 +39,9 @@ async def request_log(request: Request, response: Response, process_time: float)
         "method": request.method,
         "process_time": process_time,
         "status_code": response.status_code,
-        "ip_lookup": await lookup_ip(request.client.host),
-        "user_agent": request.headers.get("User-Agent")
+        "ip_lookup": ip_lookup,
+        "user_agent": request.headers.get("User-Agent"),
+        "location": location
     }
 
     return request_log
