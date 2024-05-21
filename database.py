@@ -23,6 +23,7 @@ async def record_item_view(id: str, r: Request):
     view.ip_lookup = await lookup_ip(ip)
     await views_collection.insert_one(view.model_dump())
     if opensearch_client:
+        view.item = await items_collection.find_one({"_id": id})
         await opensearch_client.index(INDEX_ITEMS_VIEWS, view.model_dump())
 
     views = await views_collection.count_documents({"item_id": id})
