@@ -20,8 +20,6 @@ async def add_process_time_header(request: Request, call_next):
     response: Response = await call_next(request)
     process_time = time.perf_counter() - start_time
 
-    print(f"{request.client.host}, {request.url.path}, {round(process_time, 3)}, {response.status_code}")
-
     log = await request_log(request, response, process_time)
     async def log_request(log):
         if opensearch_client:
