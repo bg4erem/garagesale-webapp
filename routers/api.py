@@ -7,13 +7,15 @@ from models.items import Item
 from database import items_collection, views_general_collection, record_item_view
 from settings import settings
 from PIL import Image, ImageOps
+from limiter import limiter_per_address
 
 router = APIRouter(prefix="/api/v1")
 
 ADMIN_PIN = settings.ADMIN_PIN
 
 @router.post("/verify_pin")
-async def authenticate_admin_pin(pin: str):
+@limiter_per_address.limit("5/minute")
+async def authenticate_admin_pin(request: Request, pin: str):
     if pin == ADMIN_PIN:
         expiration_time = datetime.now(timezone.utc) + timedelta(hours=24)
         response = JSONResponse(status_code=200, content={"message": "Authentication successful"})

@@ -7,8 +7,11 @@ from fastapi.middleware.gzip import GZipMiddleware
 import time
 from database import requests_collection
 from db_opensearch import INDEX_REQUESTS, client as opensearch_client
+from limiter import limiter_per_address, RateLimitExceeded, _rate_limit_exceeded_handler
 
 app = FastAPI(title="Garage Sale Webapp")
+app.state.limiter = limiter_per_address
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(GZipMiddleware, minimum_size=1000)
 app.mount("/media", StaticFiles(directory="media"), name="media")
 app.include_router(router_api)
