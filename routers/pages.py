@@ -27,7 +27,7 @@ async def render_home(r: Request):
 
     client_id_cookie = r.cookies.get("X-Client-ID")
     if not client_id_cookie:
-        response.set_cookie("X-Client-ID", uuid4().hex)
+        response.set_cookie("X-Client-ID", uuid4().hex, max_age=60*60*24*365)
     
     return response
 
@@ -44,7 +44,7 @@ async def render_details_page(r: Request, item_id: str):
 
     client_id_cookie = r.cookies.get("X-Client-ID")
     if not client_id_cookie:
-        response.set_cookie("X-Client-ID", uuid4().hex)
+        response.set_cookie("X-Client-ID", uuid4().hex, max_age=60*60*24*365)
 
     return response
 
