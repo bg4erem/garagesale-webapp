@@ -1,5 +1,7 @@
+import hashlib
 import os
 from datetime import datetime, timedelta, timezone
+import random
 import aiofiles
 from fastapi import APIRouter, BackgroundTasks, Cookie, HTTPException, Request, UploadFile, status
 from fastapi.responses import JSONResponse
@@ -66,6 +68,13 @@ async def return_items(r: Request, bg_tasks: BackgroundTasks, id: str|None = Non
     else:
         items = await items_collection.find({}).to_list(10_000)
         items = [Item(**item) for item in items]
+        
+        if r.cookies.get("X-Client-ID"):
+            seed = int(hashlib.md5(r.cookies.get("X-Client-ID").encode()).hexdigest(), 16)
+            print(seed)
+            random.seed(seed)
+            random.shuffle(items)
+
         return items
 
 @router.post("/items")
