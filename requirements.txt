@@ -8,3 +8,4 @@ pydantic-settings
 Pillow
 aiohttp
 opensearch-py[async]
+user-agents
