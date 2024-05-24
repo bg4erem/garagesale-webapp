@@ -71,7 +71,6 @@ async def return_items(r: Request, bg_tasks: BackgroundTasks, id: str|None = Non
         
         if r.cookies.get("X-Client-ID"):
             seed = int(hashlib.md5(r.cookies.get("X-Client-ID").encode()).hexdigest(), 16)
-            print(seed)
             random.seed(seed)
             random.shuffle(items)
 

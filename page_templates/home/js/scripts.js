@@ -48,7 +48,15 @@ async function load_and_render_items() {
 
             itemsContainer.appendChild(itemCard);
         }
-    })
+    });
+
+    const progressBarContainer = document.getElementById("soldProgressBar");
+    let itemsSoldPercent = Math.ceil((items.filter( item => item.sold ).length) / (items.length) * 100) ;
+    progressBarContainer.innerHTML = `
+        <div class="progress" role="progressbar" aria-valuenow="${itemsSoldPercent}" aria-valuemin="0" aria-valuemax="100">
+            <div class="progress-bar progress-bar-striped progress-bar-animated overflow-visible text-dark" style="width: ${itemsSoldPercent}%">${itemsSoldPercent}%</div>
+        </div>
+    `;
 }
 
 load_and_render_items();
