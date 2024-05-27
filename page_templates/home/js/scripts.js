@@ -24,10 +24,19 @@ async function load_and_render_items() {
                     ${item.price} ${item.price_curr}
                 ` 
             }
+
+            let itemCardSaleBadge = "";
+            if (item.full_price) {
+                let discount = Math.ceil(100 - (item.price / item.full_price * 100))
+                itemCardSaleBadge = `
+                    <div class="badge bg-danger text-white position-absolute" style="top: 0.5rem; right: 0.5rem">- ${discount}%</div>
+                `;
+            }
+
             itemCard.innerHTML = `
                 <div class="card h-100">
                     <!-- Sale badge-->
-                    <div class="badge bg-dark text-white position-absolute" style="top: 0.5rem; right: 0.5rem">Sale</div>
+                    ${itemCardSaleBadge}
                     <!-- Product image-->
                     <img class="card-img-top" src="${itemPictureSrc}" alt="..." />
                     <!-- Product details-->
