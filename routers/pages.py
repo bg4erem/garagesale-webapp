@@ -16,7 +16,11 @@ async def return_favicon():
 @router.get("/page_templates/{file_path:path}", include_in_schema=False)
 async def return_page_files(file_path: str):
     filepath = f"page_templates/{file_path}"
-    return FileResponse(filepath)
+
+    response = FileResponse(filepath)
+    response.headers["Cache-Control"] = "no-cache"
+
+    return response
 
 @router.get("/")
 async def render_home(r: Request):
