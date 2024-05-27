@@ -54,13 +54,14 @@ async def upload_files(files: list[UploadFile]):
 
 @router.get("/items")
 async def return_items(r: Request, bg_tasks: BackgroundTasks, id: str|None = None, record_view: bool = True):
+    admin_cookie = r.cookies.get("adminPin")
+
     if id:
         item = await items_collection.find_one({"_id":id})
         item = Item(**item)
         item.views_all = await views_general_collection.find_one({"_id": id})
         item.views_all = item.views_all.get("all") if item.views_all else 1
         
-        admin_cookie = r.cookies.get("adminPin")
         if record_view and not admin_cookie:
             bg_tasks.add_task(record_item_view, id, r)
         
@@ -69,7 +70,7 @@ async def return_items(r: Request, bg_tasks: BackgroundTasks, id: str|None = Non
         items = await items_collection.find({}).to_list(10_000)
         items = [Item(**item) for item in items]
         
-        if r.cookies.get("X-Client-ID"):
+        if r.cookies.get("X-Client-ID") and not admin_cookie:
             seed = int(hashlib.md5(r.cookies.get("X-Client-ID").encode()).hexdigest(), 16)
             random.seed(seed)
             random.shuffle(items)
