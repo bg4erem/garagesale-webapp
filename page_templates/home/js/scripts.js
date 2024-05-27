@@ -43,7 +43,8 @@ async function load_and_render_items() {
                     <div class="card-body p-4">
                         <div class="text-center">
                             <!-- Product name-->
-                            <h5 class="fw-bolder">${item.title}</h5>
+                            <h5 class="fw-bolder">
+                                <a href="/details/${item['_id']}" style="text-decoration: none; color: black;">${item.title}</a></h5>
                             <!-- Product price-->
                             ${itemPriceHTML}
                         </div>
