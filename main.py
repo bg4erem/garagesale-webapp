@@ -9,7 +9,7 @@ from database import requests_collection
 from db_opensearch import INDEX_REQUESTS, client as opensearch_client
 from limiter import limiter_per_address, RateLimitExceeded, _rate_limit_exceeded_handler
 
-app = FastAPI(title="Garage Sale Webapp")
+app = FastAPI(title="Garage Sale Webapp", docs_url=None, redoc_url=None)
 app.state.limiter = limiter_per_address
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(GZipMiddleware, minimum_size=1000)

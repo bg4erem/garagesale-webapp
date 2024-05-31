@@ -79,6 +79,13 @@ async function render_details() {
         `;
     }
 
+    let itemSoldBadge = "";
+    if (item.sold) {
+        itemSoldBadge = `
+            <div class="badge bg-danger text-white" style="top: 0.5rem; right: 0.5rem">Продано</div>
+        `;
+    }
+
     productSection.innerHTML = `
         <div class="container px-4 px-lg-5 my-5">
             <div class="row gx-4 gx-lg-5 align-items-center">
@@ -99,7 +106,7 @@ async function render_details() {
                 <div class="col-md-6">
                     <div class="small mb-1">ID: ${item['_id']}</div>
                     <div class="small mb-1">Просмотров: ${item.views_all}</div>
-                    <h1 class="display-5 fw-bolder">${item.title}</h1>
+                    <h1 class="display-5 fw-bolder">${itemSoldBadge} ${item.title}</h1>
                     <div class="fs-5 mb-5">
                         ${itemCardSaleBadge}
                         ${itemPriceHTML}
