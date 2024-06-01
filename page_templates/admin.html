@@ -342,7 +342,18 @@
                 <th scope="row">Осталось объявлений</th>
                 <td>${items.filter( i => !i.sold ).length}</td>
             </tr>
-
+            <tr>
+                <th scope="row">Сумма объявлений</th>
+                <td>${items.reduce((n, {price}) => n+ price, 0).toLocaleString("ru-ru")}</td>
+            </tr>
+            <tr>
+                <th scope="row">Сумма проданных</th>
+                <td>${items.filter( i => i.sold ).reduce((n, {price}) => n+ price, 0).toLocaleString("ru-ru")}</td>
+            </tr>
+            <tr>
+                <th scope="row">Сумма оставшихся</th>
+                <td>${items.filter( i => !i.sold ).reduce((n, {price}) => n+ price, 0).toLocaleString("ru-ru")}</td>
+            </tr>
             `;
 
         }
