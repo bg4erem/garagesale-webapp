@@ -67,8 +67,8 @@
                         <tbody id="stats-table-body">
                         </tbody>
                     </table>
-                    <div id="charts-items-count"></div>
-                    <div id="charts-items-amount"></div>
+                    <div id="charts-items-count" style="height: 100%; width: 100%;"></div>
+                    <div id="charts-items-amount" style="height: 100%; width: 100%;"></div>
                 </div>
               </div>
             </div>
@@ -381,6 +381,32 @@
                     data: [
                         { value: items.filter( i => i.sold ).length, name: 'Sold' },
                         { value: items.filter( i => !i.sold ).length, name: 'Unsold' },
+                    ]
+                    }
+                ]
+            });
+
+            let chartAmount = echarts.init(document.getElementById('charts-items-amount'));
+            chartAmount.setOption({
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center'
+                },
+                series: [
+                    {
+                    name: 'Items',
+                    type: 'pie',
+                    radius: ['40%', '70%'],
+                    center: ['50%', '70%'],
+                    // adjust the start and end angle
+                    startAngle: 180,
+                    endAngle: 360,
+                    data: [
+                        { value: items.filter( i => i.sold ).reduce((n, {price}) => n+ price, 0), name: 'Sold Amount KZT' },
+                        { value: items.filter( i => !i.sold ).reduce((n, {price}) => n+ price, 0), name: 'Unsold Amount KZT' },
                     ]
                     }
                 ]
