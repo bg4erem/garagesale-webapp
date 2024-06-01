@@ -67,8 +67,8 @@
                         <tbody id="stats-table-body">
                         </tbody>
                     </table>
-                    <div id="charts-items-count" style="height: 100%; width: 100%;"></div>
-                    <div id="charts-items-amount" style="height: 100%; width: 100%;"></div>
+                    <div id="charts-items-count" style="width: 600px;height:400px;"></div>
+                    <div id="charts-items-amount" style="width: 600px;height:400px;"></div>
                 </div>
               </div>
             </div>
@@ -362,12 +362,14 @@
         async function renderCharts() {
             let chartCount = echarts.init(document.getElementById('charts-items-count'));
             chartCount.setOption({
+                title: {
+                    text: 'Items Sold', left: 'center'
+                },
                 tooltip: {
                     trigger: 'item'
                 },
                 legend: {
-                    top: '5%',
-                    left: 'center'
+                    top: '5%', left: 'center'
                 },
                 series: [
                     {
@@ -388,12 +390,14 @@
 
             let chartAmount = echarts.init(document.getElementById('charts-items-amount'));
             chartAmount.setOption({
+                title: {
+                    text: 'Items Sold in KZT', left: 'center'
+                },
                 tooltip: {
                     trigger: 'item'
                 },
                 legend: {
-                    top: '5%',
-                    left: 'center'
+                    top: '5%', left: 'center'
                 },
                 series: [
                     {
