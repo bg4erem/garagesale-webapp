@@ -27,7 +27,10 @@ async def authenticate_admin_pin(request: Request, pin: str):
         raise HTTPException(status_code=401, detail="Authentication failed")
 
 @router.post("/upload_files")
-async def upload_files(files: list[UploadFile]):
+async def upload_files(files: list[UploadFile], admin_pin: str = Cookie(None, alias="adminPin")):
+    if admin_pin != ADMIN_PIN:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
     filepathes = []
 
     for file in files:
